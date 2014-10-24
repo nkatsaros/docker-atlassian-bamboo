@@ -1,0 +1,43 @@
+FROM debian:jessie
+
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN groupadd -r atlassian && useradd -r -g atlassian atlassian
+
+# grab gosu for easy step-down from root
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
+  && curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/download/1.1/gosu' \
+  && chmod +x /usr/local/bin/gosu \
+  && apt-get purge -y --auto-remove curl
+
+# # grab the bamboo dependencies
+RUN apt-get update && apt-get install -y \
+    openjdk-7-jdk \
+    libtcnative-1 \
+    git \
+    subversion \
+    mercurial \
+    cvs \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV BAMBOO_VERSION 5.4.3
+ENV BAMBOO_HOME /var/atlassian/bamboo
+
+# extract bamboo
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /opt/atlassian \
+  && curl -o /opt/atlassian/atlassian-bamboo.tar.gz -SL 'http://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-5.4.3.tar.gz' \
+  && tar xzf /opt/atlassian/atlassian-bamboo.tar.gz -C /opt/atlassian --strip-components=1 \
+  && echo "bamboo.home=$BAMBOO_HOME" > /opt/atlassian/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties \
+  && rm -f /opt/atlassian/atlassian-bamboo.tar.gz \
+  && chown -R atlassian /opt/atlassian \
+  && apt-get purge -y --auto-remove curl
+
+VOLUME /var/atlassian/bamboo
+
+COPY ./docker-entrypoint.sh /
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# http(s), remote agent
+EXPOSE 8085 54663
+CMD ["bamboo"]

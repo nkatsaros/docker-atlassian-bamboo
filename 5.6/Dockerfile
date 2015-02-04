@@ -23,13 +23,13 @@ RUN apt-get update && apt-get install -y \
     cvs \
   && rm -rf /var/lib/apt/lists/*
 
-ENV BAMBOO_VERSION 5.6.2
+ENV BAMBOO_VERSION 5.6.3
 ENV BAMBOO_HOME /var/atlassian/bamboo
 
 # extract bamboo
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
   && mkdir -p /opt/atlassian \
-  && curl -o /opt/atlassian/atlassian-bamboo.tar.gz -SL 'http://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-5.6.2.tar.gz' \
+  && curl -o /opt/atlassian/atlassian-bamboo.tar.gz -SL 'http://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-5.6.3.tar.gz' \
   && tar xf /opt/atlassian/atlassian-bamboo.tar.gz -C /opt/atlassian --strip-components=1 \
   && echo "bamboo.home=$BAMBOO_HOME" > /opt/atlassian/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties \
   && rm -f /opt/atlassian/atlassian-bamboo.tar.gz \

@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     subversion \
     mercurial \
     cvs \
+    docker.io \
   && rm -rf /var/lib/apt/lists/*
 
 ENV BAMBOO_VERSION 5.1.1

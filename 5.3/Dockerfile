@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
   && apt-get purge -y --auto-remove curl
 
 # # grab the bamboo dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y ca-certificates \
+  && echo "deb http://http.debian.net/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list \
+  && apt-get update && apt-get install -y \
     openjdk-7-jdk \
     libtcnative-1 \
     git \
@@ -22,7 +24,8 @@ RUN apt-get update && apt-get install -y \
     mercurial \
     cvs \
     docker.io \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -f /ect/apt/sources.list.d/jessie-backports.list
 
 ENV BAMBOO_VERSION 5.3
 ENV BAMBOO_HOME /var/atlassian/bamboo
